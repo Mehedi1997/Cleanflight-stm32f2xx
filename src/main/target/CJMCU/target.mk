@@ -1,5 +1,5 @@
 F1_TARGETS  += $(TARGET)
-FLASH_SIZE  = 64
+FLASH_SIZE  = 128
 
 TARGET_SRC = \
             drivers/accgyro/accgyro_mpu.c \

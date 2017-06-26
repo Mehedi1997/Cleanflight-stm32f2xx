@@ -28,6 +28,15 @@
 #ifndef UART_TX_BUFFER_SIZE
 #define UART_TX_BUFFER_SIZE     256
 #endif
+#elif defined(STM32F2)
+#define UARTDEV_COUNT_MAX 6
+#define UARTHARDWARE_MAX_PINS 4
+#ifndef UART_RX_BUFFER_SIZE
+#define UART_RX_BUFFER_SIZE     512
+#endif
+#ifndef UART_TX_BUFFER_SIZE
+#define UART_TX_BUFFER_SIZE     256
+#endif
 #elif defined(STM32F3)
 #define UARTDEV_COUNT_MAX 5
 #define UARTHARDWARE_MAX_PINS 4
@@ -38,6 +47,15 @@
 #define UART_TX_BUFFER_SIZE     256
 #endif
 #elif defined(STM32F4)
+#define UARTDEV_COUNT_MAX 6
+#define UARTHARDWARE_MAX_PINS 4
+#ifndef UART_RX_BUFFER_SIZE
+#define UART_RX_BUFFER_SIZE     512
+#endif
+#ifndef UART_TX_BUFFER_SIZE
+#define UART_TX_BUFFER_SIZE     512
+#endif
+#elif defined(STM32F2)
 #define UARTDEV_COUNT_MAX 6
 #define UARTHARDWARE_MAX_PINS 4
 #ifndef UART_RX_BUFFER_SIZE
@@ -117,7 +135,7 @@ typedef struct uartHardware_s {
 #if defined(STM32F1) || defined(STM32F3)
     DMA_Channel_TypeDef *txDMAChannel;
     DMA_Channel_TypeDef *rxDMAChannel;
-#elif defined(STM32F4) || defined(STM32F7)
+#elif defined(STM32F4) || defined(STM32F7) || defined(STM32F2)
     uint32_t DMAChannel;
     DMA_Stream_TypeDef *txDMAStream;
     DMA_Stream_TypeDef *rxDMAStream;

@@ -81,13 +81,14 @@ include $(ROOT)/make/$(OSFAMILY).mk
 # include the tools makefile
 include $(ROOT)/make/tools.mk
 
-# default xtal value for F4 targets
-HSE_VALUE       ?= 8000000
+# default xtal value for F2 targets
+#....modified.....
+HSE_VALUE       ?= 25000000
 
 # used for turning on features like VCP and SDCARD
 FEATURES        =
 
-OFFICIAL_TARGETS  = ALIENFLIGHTF3 ALIENFLIGHTF4 ANYFCF7 BETAFLIGHTF3 BLUEJAYF4 CC3D FURYF4 NAZE REVO SIRINFPV SPARKY SPRACINGF3 SPRACINGF3EVO SPRACINGF3NEO SPRACINGF3MINI STM32F3DISCOVERY SPRACINGF4EVO
+OFFICIAL_TARGETS  = ALIENFLIGHTF3 ALIENFLIGHTF4 ANYFCF7 BETAFLIGHTF3 BLUEJAYF4 CC3D FURYF4 NAZE REVO SIRINFPV SPARKY SPRACINGF3 SPRACINGF3EVO SPRACINGF3NEO SPRACINGF3MINI STM32F3DISCOVERY SPRACINGF4EVO STM32F207
 VARIANT_TARGETS   = $(sort $(filter-out target, $(basename $(notdir $(wildcard $(ROOT)/src/main/target/*/*.mk)))))
 OPBL_TARGETS      = $(filter %_OPBL, $(VARIANT_TARGETS))
 OSD_SLAVE_TARGETS = SPRACINGF3OSD
@@ -163,6 +164,7 @@ GROUP_3_TARGETS := \
 	RCEXPLORERF3 \
 	REVO \
 	REVO_OPBL \
+	STM32F207 \
 
 GROUP_4_TARGETS := \
 	REVOLT \
@@ -217,13 +219,14 @@ ifeq ($(filter $(TARGET),$(VALID_TARGETS)),)
 $(error Target '$(TARGET)' is not valid, must be one of $(VALID_TARGETS). Have you prepared a valid target.mk?)
 endif
 
-ifeq ($(filter $(TARGET),$(F1_TARGETS) $(F3_TARGETS) $(F4_TARGETS) $(F7_TARGETS) $(SITL_TARGETS)),)
+ifeq ($(filter $(TARGET),$(F1_TARGETS) $(F2_TARGETS) $(F3_TARGETS) $(F4_TARGETS) $(F7_TARGETS) $(SITL_TARGETS)),)
 $(error Target '$(TARGET)' has not specified a valid STM group, must be one of F1, F3, F405, F411 or F7x5. Have you prepared a valid target.mk?)
 endif
 
 128K_TARGETS  = $(F1_TARGETS)
+#...modified..
 256K_TARGETS  = $(F3_TARGETS)
-512K_TARGETS  = $(F411_TARGETS) $(F446_TARGETS) $(F7X2RE_TARGETS) $(F7X5XE_TARGETS)
+512K_TARGETS  = $(F411_TARGETS) $(F446_TARGETS) $(F7X2RE_TARGETS) $(F7X5XE_TARGETS) $(F2_TARGETS)
 1024K_TARGETS = $(F405_TARGETS) $(F7X5XG_TARGETS) $(F7X6XG_TARGETS)
 2048K_TARGETS = $(F7X5XI_TARGETS) $(SITL_TARGETS)
 
@@ -574,6 +577,94 @@ ARM_SDK_PREFIX  =
 
 # End SITL targets
 #
+# Start F2 targets
+else ifeq ($(TARGET),$(filter $(TARGET), $(F2_TARGETS)))
+
+#STDPERIPH
+STDPERIPH_DIR   = $(ROOT)/lib/main/STM32F2xx_StdPeriph_Driver
+STDPERIPH_SRC   = $(notdir $(wildcard $(STDPERIPH_DIR)/src/*.c))
+EXCLUDES        = stm32f2xx_crc.c \
+                  stm32f2xx_can.c \
+#                  stm32f2xx_fmc.c \
+#                  stm32f2xx_sai.c \
+#                  stm32f2xx_cec.c \
+#                  stm32f2xx_dsi.c \
+#                  stm32f2xx_flash_ramfunc.c \
+#                  stm32f2xx_fmpi2c.c \
+#                  stm32f2xx_lptim.c \
+#                  stm32f2xx_qspi.c \
+#                  stm32f2xx_spdifrx.c \
+#                  stm32f2xx_cryp.c \
+#                  stm32f2xx_cryp_aes.c \
+#                  stm32f2xx_hash_md5.c \
+#                  stm32f2xx_cryp_des.c \
+#                  stm32f2xx_rtc.c \
+#                  stm32f2xx_hash.c \
+#                  stm32f2xx_dbgmcu.c \
+#                  stm32f2xx_cryp_tdes.c \
+#                  stm32f2xx_hash_sha1.c
+#
+STDPERIPH_SRC   := $(filter-out ${EXCLUDES}, $(STDPERIPH_SRC))
+
+#USB
+USBCORE_DIR = $(ROOT)/lib/main/STM32_USB_Device_Library/Core
+USBCORE_SRC = $(notdir $(wildcard $(USBCORE_DIR)/src/*.c))
+USBOTG_DIR  = $(ROOT)/lib/main/STM32_USB_OTG_Driver
+USBOTG_SRC  = $(notdir $(wildcard $(USBOTG_DIR)/src/*.c))
+EXCLUDES    = usb_bsp_template.c \
+              usb_conf_template.c \
+              usb_hcd_int.c \
+              usb_hcd.c \
+              usb_otg.c
+
+USBOTG_SRC  := $(filter-out ${EXCLUDES}, $(USBOTG_SRC))
+USBCDC_DIR  = $(ROOT)/lib/main/STM32_USB_Device_Library/Class/cdc
+USBCDC_SRC  = $(notdir $(wildcard $(USBCDC_DIR)/src/*.c))
+EXCLUDES    = usbd_cdc_if_template.c
+USBCDC_SRC  := $(filter-out ${EXCLUDES}, $(USBCDC_SRC))
+VPATH       := $(VPATH):$(USBOTG_DIR)/src:$(USBCORE_DIR)/src:$(USBCDC_DIR)/src
+
+DEVICE_STDPERIPH_SRC := $(STDPERIPH_SRC) \
+                        $(USBOTG_SRC) \
+                        $(USBCORE_SRC) \
+                        $(USBCDC_SRC)
+
+#CMSIS
+VPATH           := $(VPATH):$(CMSIS_DIR)/CM3/CoreSupport:$(CMSIS_DIR)/CM3/DeviceSupport/ST/STM32F2xx
+CMSIS_SRC       = $(notdir $(wildcard $(CMSIS_DIR)/CM3/CoreSupport/*.c \
+                  $(CMSIS_DIR)/CM3/DeviceSupport/ST/STM32F2xx/*.c))
+INCLUDE_DIRS    := $(INCLUDE_DIRS) \
+                   $(STDPERIPH_DIR)/inc \
+                   $(USBOTG_DIR)/inc \
+                   $(USBCORE_DIR)/inc \
+                   $(USBCDC_DIR)/inc \
+                   $(USBFS_DIR)/inc \
+                   $(CMSIS_DIR)/CM3/CoreSupport \
+                   $(CMSIS_DIR)/CM3/DeviceSupport/ST/STM32F2xx \
+                   $(ROOT)/src/main/vcpf2
+
+ifneq ($(filter SDCARD,$(FEATURES)),)
+INCLUDE_DIRS    := $(INCLUDE_DIRS) \
+                   $(FATFS_DIR)
+VPATH           := $(VPATH):$(FATFS_DIR)
+endif
+
+#Flags -march=armv6-m
+ARCH_FLAGS      = -mthumb -mcpu=cortex-m3
+
+ifeq ($(TARGET),$(filter $(TARGET),$(F2_TARGETS)))
+DEVICE_FLAGS    = -DSTM32F207xx -DSTM32F2xx
+LD_SCRIPT       = $(LINKER_DIR)/stm32_flash_f207_256k.ld 
+#LD_SCRIPT       += $(LINKER_DIR)/stm32_flash_split.ld 
+STARTUP_SRC     = startup_stm32f2xx.s
+
+else
+$(error Unknown MCU for F4 target)
+endif
+
+
+DEVICE_FLAGS    += -DHSE_VALUE=$(HSE_VALUE)
+
 # Start F1 targets
 else
 
@@ -644,6 +735,9 @@ else ifeq ($(TARGET), $(filter $(TARGET),$(F411_TARGETS)))
 LD_SCRIPT = $(LINKER_DIR)/stm32_flash_f411_opbl.ld
 else ifeq ($(TARGET), $(filter $(TARGET),$(F3_TARGETS)))
 LD_SCRIPT = $(LINKER_DIR)/stm32_flash_f303_$(FLASH_SIZE)k_opbl.ld
+#....modified.....
+else ifeq ($(TARGET), $(filter $(TARGET),$(F2_TARGETS)))
+LD_SCRIPT = $(LINKER_DIR)/stm32_flash_f207_$(FLASH_SIZE)k_opbl.ld
 else ifeq ($(TARGET), $(filter $(TARGET),$(F1_TARGETS)))
 LD_SCRIPT = $(LINKER_DIR)/stm32_flash_f103_$(FLASH_SIZE)k_opbl.ld
 endif
@@ -934,7 +1028,17 @@ SIZE_OPTIMISED_SRC := $(SIZE_OPTIMISED_SRC) \
             io/vtx_control.c
 endif #!F1
 
-ifeq ($(TARGET),$(filter $(TARGET),$(F4_TARGETS)))
+ifeq ($(TARGET),$(filter $(TARGET),$(F2_TARGETS)))
+VCP_SRC = \
+            vcpf2/stm32f2xx_it.c \
+            vcpf2/usb_bsp.c \
+            vcpf2/usbd_desc.c \
+            vcpf2/usbd_usr.c \
+            vcpf2/usbd_cdc_vcp.c \
+            drivers/serial_usb_vcp.c \
+            drivers/usb_io.c
+
+else ifeq ($(TARGET),$(filter $(TARGET),$(F4_TARGETS)))
 VCP_SRC = \
             vcpf4/stm32f4xx_it.c \
             vcpf4/usb_bsp.c \
@@ -974,7 +1078,21 @@ STM32F10x_COMMON_SRC = \
             drivers/serial_uart_stm32f10x.c \
             drivers/system_stm32f10x.c \
             drivers/timer_stm32f10x.c
-
+            
+STM32F2xx_COMMON_SRC = \
+            drivers/accgyro/accgyro_mpu.c \
+            drivers/bus_i2c_stm32f207xx.c \
+            drivers/adc_stm32f207xx.c \
+            drivers/accgyro/accgyro_mpu6050.c \
+            drivers/dma_stm32f207xx.c \
+            drivers/gpio_stm32f207xx.c \
+            drivers/inverter.c \
+            drivers/light_ws2811strip_stdperiph.c \
+            drivers/pwm_output_dshot.c \
+            drivers/serial_uart_init.c \
+            drivers/serial_uart_stm32f207xx.c \
+            drivers/system_stm32f2xx.c \
+            drivers/timer_stm32f207xx.c
 STM32F30x_COMMON_SRC = \
             target/system_stm32f30x.c \
             drivers/adc_stm32f30x.c \
@@ -1053,6 +1171,8 @@ else ifeq ($(TARGET),$(filter $(TARGET),$(F7_TARGETS)))
 SRC := $(STARTUP_SRC) $(STM32F7xx_COMMON_SRC) $(TARGET_SRC) $(VARIANT_SRC)
 else ifeq ($(TARGET),$(filter $(TARGET),$(F3_TARGETS)))
 SRC := $(STARTUP_SRC) $(STM32F30x_COMMON_SRC) $(TARGET_SRC) $(VARIANT_SRC)
+else ifeq ($(TARGET),$(filter $(TARGET),$(F2_TARGETS)))
+SRC := $(STARTUP_SRC) $(STM32F2xx_COMMON_SRC) $(TARGET_SRC) $(VARIANT_SRC)
 else ifeq ($(TARGET),$(filter $(TARGET),$(F1_TARGETS)))
 SRC := $(STARTUP_SRC) $(STM32F10x_COMMON_SRC) $(TARGET_SRC) $(VARIANT_SRC)
 else ifeq ($(TARGET),$(filter $(TARGET),$(SITL_TARGETS)))
@@ -1152,6 +1272,12 @@ ifeq ($(TARGET),$(filter $(TARGET),$(F1_TARGETS)))
 OPTIMISE_DEFAULT    := -Os
 
 LTO_FLAGS           := $(OPTIMISATION_BASE) $(OPTIMISE_DEFAULT)
+else ifeq ($(TARGET),$(filter $(TARGET),$(F2_TARGETS)))
+OPTIMISE_DEFAULT    := -O2
+OPTIMISE_SPEED      := -Ofast
+OPTIMISE_SIZE       := -Os
+
+LTO_FLAGS           := $(OPTIMISATION_BASE) $(OPTIMISE_SPEED)
 
 else ifeq ($(TARGET),$(filter $(TARGET),$(SITL_TARGETS)))
 OPTIMISE_DEFAULT    := -Ofast

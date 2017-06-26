@@ -68,6 +68,14 @@ const struct ioPortDef_s ioPortDefs[] = {
     { RCC_AHB1(GPIOE) },
     { RCC_AHB1(GPIOF) },
 };
+#elif defined(STM32F2)
+const struct ioPortDef_s ioPortDefs[] = {
+    { RCC_AHB1(GPIOA) },
+    { RCC_AHB1(GPIOB) },
+    { RCC_AHB1(GPIOC) },
+    { RCC_AHB1(GPIOD) },
+    { RCC_AHB1(GPIOE) },
+};
 #elif defined(STM32F7)
 const struct ioPortDef_s ioPortDefs[] = {
     { RCC_AHB1(GPIOA) },
@@ -141,6 +149,8 @@ uint32_t IO_EXTI_Line(IO_t io)
     return 1 << IO_GPIOPinIdx(io);
 #elif defined(STM32F3)
     return IO_GPIOPinIdx(io);
+#elif defined(STM32F2)
+    return 1 << IO_GPIOPinIdx(io);
 #elif defined(STM32F4)
     return 1 << IO_GPIOPinIdx(io);
 #elif defined(STM32F7)
@@ -181,6 +191,13 @@ void IOWrite(IO_t io, bool hi)
     else {
         IO_GPIO(io)->BSRRH = IO_Pin(io);
     }
+#elif defined(STM32F2)
+    if (hi) {
+        IO_GPIO(io)->BSRRL = IO_Pin(io);
+    }
+    else {
+        IO_GPIO(io)->BSRRH = IO_Pin(io);
+    }
 #else
     IO_GPIO(io)->BSRR = IO_Pin(io) << (hi ? 0 : 16);
 #endif
@@ -194,6 +211,8 @@ void IOHi(IO_t io)
     HAL_GPIO_WritePin(IO_GPIO(io),IO_Pin(io),GPIO_PIN_SET);
 #elif defined(STM32F4)
     IO_GPIO(io)->BSRRL = IO_Pin(io);
+#elif defined(STM32F2)
+    IO_GPIO(io)->BSRRL = IO_Pin(io);
 #else
     IO_GPIO(io)->BSRR = IO_Pin(io);
 #endif
@@ -206,6 +225,8 @@ void IOLo(IO_t io)
 #if defined(USE_HAL_DRIVER)
     HAL_GPIO_WritePin(IO_GPIO(io),IO_Pin(io),GPIO_PIN_RESET);
 #elif defined(STM32F4)
+    IO_GPIO(io)->BSRRH = IO_Pin(io);
+#elif defined(STM32F2)
     IO_GPIO(io)->BSRRH = IO_Pin(io);
 #else
     IO_GPIO(io)->BRR = IO_Pin(io);
@@ -224,6 +245,12 @@ void IOToggle(IO_t io)
     (void)mask;
     HAL_GPIO_TogglePin(IO_GPIO(io),IO_Pin(io));
 #elif defined(STM32F4)
+    if (IO_GPIO(io)->ODR & mask) {
+        IO_GPIO(io)->BSRRH = mask;
+    } else {
+        IO_GPIO(io)->BSRRL = mask;
+    }
+#elif defined(STM32F2)
     if (IO_GPIO(io)->ODR & mask) {
         IO_GPIO(io)->BSRRH = mask;
     } else {
@@ -314,7 +341,7 @@ void IOConfigGPIOAF(IO_t io, ioConfig_t cfg, uint8_t af)
     };
     HAL_GPIO_Init(IO_GPIO(io), &init);
 }
-#elif defined(STM32F3) || defined(STM32F4)
+#elif defined(STM32F3) || defined(STM32F4) || defined(STM32F2)
 
 void IOConfigGPIO(IO_t io, ioConfig_t cfg)
 {

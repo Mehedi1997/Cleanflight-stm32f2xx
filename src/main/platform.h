@@ -65,6 +65,18 @@
 
 #define STM32F3
 
+#elif defined(STM32F207xx)
+#include "stm32f2xx_conf.h"
+#include "stm32f2xx_rcc.h"
+#include "stm32f2xx_gpio.h"
+#include "core_cm3.h"
+
+#define U_ID_0 (*(uint32_t*)0x1FFF7A10)
+#define U_ID_1 (*(uint32_t*)0x1FFF7A14)
+#define U_ID_2 (*(uint32_t*)0x1FFF7A18)
+
+#define STM32F2
+
 #elif defined(STM32F10X)
 
 #include "stm32f10x_conf.h"

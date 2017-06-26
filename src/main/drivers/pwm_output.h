@@ -36,12 +36,12 @@ typedef enum {
     DSHOT_CMD_BEEP4,
     DSHOT_CMD_BEEP5,
     DSHOT_CMD_ESC_INFO,
-    DSHOT_CMD_SPIN_ONE_WAY, 
-    DSHOT_CMD_SPIN_OTHER_WAY, 
+    DSHOT_CMD_SPIN_ONE_WAY,
+    DSHOT_CMD_SPIN_OTHER_WAY,
     DSHOT_CMD_3D_MODE_OFF,
-    DSHOT_CMD_3D_MODE_ON, 
+    DSHOT_CMD_3D_MODE_ON,
     DSHOT_CMD_SETTINGS_REQUEST,
-    DSHOT_CMD_SAVE_SETTINGS, 
+    DSHOT_CMD_SAVE_SETTINGS,
     DSHOT_CMD_ROTATE_NORMAL = 20, //Blheli_S only command
     DSHOT_CMD_ROTATE_REVERSE = 21,  //Blheli_S only command
     DSHOT_CMD_MAX = 47
@@ -88,6 +88,11 @@ typedef enum {
 #define ONESHOT42_TIMER_MHZ   27
 #define MULTISHOT_TIMER_MHZ   54
 #define PWM_BRUSHED_TIMER_MHZ 27
+#elif defined(STM32F2) // must be multiples of timer clock (120Mhz)
+#define ONESHOT125_TIMER_MHZ  10
+#define ONESHOT42_TIMER_MHZ   30
+#define MULTISHOT_TIMER_MHZ   60
+#define PWM_BRUSHED_TIMER_MHZ 20
 #else
 #define ONESHOT125_TIMER_MHZ  8
 #define ONESHOT42_TIMER_MHZ   24
@@ -108,7 +113,7 @@ typedef struct {
     uint16_t value;
     uint16_t timerDmaSource;
     volatile bool requestTelemetry;
-#if defined(STM32F3) || defined(STM32F4) || defined(STM32F7)
+#if defined(STM32F3) || defined(STM32F4) || defined(STM32F7) || defined(STM32F2)
     uint32_t dmaBuffer[MOTOR_DMA_BUFFER_SIZE];
 #else
     uint8_t dmaBuffer[MOTOR_DMA_BUFFER_SIZE];

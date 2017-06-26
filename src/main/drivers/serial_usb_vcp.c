@@ -25,7 +25,7 @@
 #include "common/utils.h"
 #include "drivers/io.h"
 
-#if defined(STM32F4)
+#if defined(STM32F4) || defined(STM32F2)
 #include "usb_core.h"
 #include "usbd_cdc_vcp.h"
 #include "usb_io.h"
@@ -185,7 +185,7 @@ serialPort_t *usbVcpOpen(void)
 {
     vcpPort_t *s;
 
-#if defined(STM32F4)
+#if defined(STM32F4) || defined(STM32F2)
     usbGenerateDisconnectPulse();
 
     IOInit(IOGetByTag(IO_TAG(PA11)), OWNER_USB, 0);

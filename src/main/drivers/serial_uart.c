@@ -54,7 +54,7 @@ void uartSetMode(serialPort_t *instance, portMode_t mode)
 
 void uartStartTxDMA(uartPort_t *s)
 {
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
     DMA_Cmd(s->txDMAStream, DISABLE);
     DMA_MemoryTargetConfig(s->txDMAStream, (uint32_t)&s->port.txBuffer[s->port.txBufferTail], DMA_Memory_0);
     //s->txDMAStream->M0AR = (uint32_t)&s->port.txBuffer[s->port.txBufferTail];
@@ -85,7 +85,7 @@ void uartStartTxDMA(uartPort_t *s)
 uint32_t uartTotalRxBytesWaiting(const serialPort_t *instance)
 {
     const uartPort_t *s = (const uartPort_t*)instance;
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
     if (s->rxDMAStream) {
         uint32_t rxDMAHead = s->rxDMAStream->NDTR;
 #else
@@ -118,7 +118,7 @@ uint32_t uartTotalTxBytesFree(const serialPort_t *instance)
         bytesUsed = s->port.txBufferSize + s->port.txBufferHead - s->port.txBufferTail;
     }
 
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
     if (s->txDMAStream) {
         /*
          * When we queue up a DMA request, we advance the Tx buffer tail before the transfer finishes, so we must add
@@ -152,7 +152,7 @@ uint32_t uartTotalTxBytesFree(const serialPort_t *instance)
 bool isUartTransmitBufferEmpty(const serialPort_t *instance)
 {
     const uartPort_t *s = (const uartPort_t *)instance;
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
     if (s->txDMAStream)
 #else
     if (s->txDMAChannel)
@@ -167,7 +167,7 @@ uint8_t uartRead(serialPort_t *instance)
     uint8_t ch;
     uartPort_t *s = (uartPort_t *)instance;
 
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
     if (s->rxDMAStream) {
 #else
     if (s->rxDMAChannel) {
@@ -197,7 +197,7 @@ void uartWrite(serialPort_t *instance, uint8_t ch)
         s->port.txBufferHead++;
     }
 
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
     if (s->txDMAStream) {
         if (!(s->txDMAStream->CR & 1))
 #else

@@ -40,7 +40,7 @@ static void i2cUnstick(IO_t scl, IO_t sda);
 
 #define GPIO_AF_I2C GPIO_AF_I2C1
 
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
 #define IOCFG_I2C_PU IO_CONFIG(GPIO_Mode_AF, 0, GPIO_OType_OD, GPIO_PuPd_UP)
 #define IOCFG_I2C    IO_CONFIG(GPIO_Mode_AF, 0, GPIO_OType_OD, GPIO_PuPd_NOPULL)
 #else // STM32F4
@@ -103,7 +103,7 @@ void I2C2_EV_IRQHandler(void) {
     i2c_ev_handler(I2CDEV_2);
 }
 
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
 void I2C3_ER_IRQHandler(void) {
     i2c_er_handler(I2CDEV_3);
 }
@@ -366,7 +366,7 @@ void i2cInit(I2CDevice device)
         return;
 
     i2cDevice_t *pDev = &i2cDevice[device];
-    const i2cHardware_t *hw = pDev->hardware; 
+    const i2cHardware_t *hw = pDev->hardware;
 
     if (!hw) {
         return;
@@ -393,7 +393,7 @@ void i2cInit(I2CDevice device)
     i2cUnstick(scl, sda);
 
     // Init pins
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
     IOConfigGPIOAF(scl, pDev->pullUp ? IOCFG_I2C_PU : IOCFG_I2C, GPIO_AF_I2C);
     IOConfigGPIOAF(sda, pDev->pullUp ? IOCFG_I2C_PU : IOCFG_I2C, GPIO_AF_I2C);
 #else

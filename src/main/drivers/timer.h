@@ -30,6 +30,11 @@ typedef uint32_t timCCR_t;
 typedef uint32_t timCCER_t;
 typedef uint32_t timSR_t;
 typedef uint32_t timCNT_t;
+#elif defined(STM32F2)
+typedef uint32_t timCCR_t;
+typedef uint32_t timCCER_t;
+typedef uint32_t timSR_t;
+typedef uint32_t timCNT_t;
 #elif defined(STM32F7)
 typedef uint32_t timCCR_t;
 typedef uint32_t timCCER_t;
@@ -93,11 +98,11 @@ typedef struct timerHardware_s {
     uint8_t channel;
     timerUsageFlag_e usageFlags;
     uint8_t output;
-#if defined(STM32F3) || defined(STM32F4) || defined(STM32F7)
+#if defined(STM32F3) || defined(STM32F4) || defined(STM32F7) || defined(STM32F2)
     uint8_t alternateFunction;
 #endif
 #if defined(USE_DSHOT) || defined(LED_STRIP) || defined(TRANSPONDER)
-#if defined(STM32F4) || defined(STM32F7)
+#if defined(STM32F4) || defined(STM32F7) || defined(STM32F2)
     DMA_Stream_TypeDef *dmaRef;
     uint32_t dmaChannel;
 #elif defined(STM32F3) || defined(STM32F1)
@@ -129,6 +134,8 @@ typedef enum {
 #elif defined(STM32F411xE)
 #define HARDWARE_TIMER_DEFINITION_COUNT 10
 #elif defined(STM32F4)
+#define HARDWARE_TIMER_DEFINITION_COUNT 14
+#elif defined(STM32F2)
 #define HARDWARE_TIMER_DEFINITION_COUNT 14
 #elif defined(STM32F7)
 #define HARDWARE_TIMER_DEFINITION_COUNT 14

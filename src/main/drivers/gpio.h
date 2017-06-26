@@ -49,6 +49,22 @@ typedef enum
 } GPIO_Mode;
 #endif
 
+#ifdef STM32F2
+typedef enum
+{
+    Mode_AIN         = (GPIO_PuPd_NOPULL << 2) | GPIO_Mode_AN,
+    Mode_IN_FLOATING = (GPIO_PuPd_NOPULL << 2) | GPIO_Mode_IN,
+    Mode_IPD         = (GPIO_PuPd_DOWN   << 2) | GPIO_Mode_IN,
+    Mode_IPU         = (GPIO_PuPd_UP     << 2) | GPIO_Mode_IN,
+    Mode_Out_OD      = (GPIO_OType_OD    << 4) | GPIO_Mode_OUT,
+    Mode_Out_PP      = (GPIO_OType_PP    << 4) | GPIO_Mode_OUT,
+    Mode_AF_OD       = (GPIO_OType_OD    << 4) | GPIO_Mode_AF,
+    Mode_AF_PP       = (GPIO_OType_PP    << 4) | GPIO_Mode_AF,
+    Mode_AF_PP_PD    = (GPIO_OType_PP    << 4) | (GPIO_PuPd_DOWN  << 2) | GPIO_Mode_AF,
+    Mode_AF_PP_PU    = (GPIO_OType_PP    << 4) | (GPIO_PuPd_UP    << 2) | GPIO_Mode_AF
+} GPIO_Mode;
+#endif
+
 #ifdef STM32F4
 typedef enum
 {
@@ -122,8 +138,11 @@ static inline void digitalHi(GPIO_TypeDef *p, uint16_t i) { HAL_GPIO_WritePin(p,
 static inline void digitalLo(GPIO_TypeDef *p, uint16_t i) { HAL_GPIO_WritePin(p,i,GPIO_PIN_RESET); }
 static inline void digitalToggle(GPIO_TypeDef *p, uint16_t i) { HAL_GPIO_TogglePin(p,i); }
 static inline uint16_t digitalIn(GPIO_TypeDef *p, uint16_t i) { return HAL_GPIO_ReadPin(p,i); }
-#else
-#if defined(STM32F4)
+#elif defined(STM32F4)
+static inline void digitalHi(GPIO_TypeDef *p, uint16_t i) { p->BSRRL = i; }
+static inline void digitalLo(GPIO_TypeDef *p, uint16_t i) { p->BSRRH = i; }
+//....modified.....
+#elif defined(STM32F2)
 static inline void digitalHi(GPIO_TypeDef *p, uint16_t i) { p->BSRRL = i; }
 static inline void digitalLo(GPIO_TypeDef *p, uint16_t i) { p->BSRRH = i; }
 #else
@@ -133,7 +152,7 @@ static inline void digitalLo(GPIO_TypeDef *p, uint16_t i) { p->BRR = i; }
 static inline void digitalToggle(GPIO_TypeDef *p, uint16_t i) { p->ODR ^= i; }
 static inline uint16_t digitalIn(GPIO_TypeDef *p, uint16_t i) { return p->IDR & i; }
 #endif
-#endif
+
 
 
 void gpioInit(GPIO_TypeDef *gpio, gpio_config_t *config);

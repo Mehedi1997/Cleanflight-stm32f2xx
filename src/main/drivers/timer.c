@@ -255,6 +255,7 @@ void timerConfigure(const timerHardware_t *timerHardwarePtr, uint16_t period, ui
     timerNVICConfigure(irq);
     // HACK - enable second IRQ on timers that need it
     switch(irq) {
+#warning I dont understand why two timers capture compare interrupt are configured together!
 #if defined(STM32F10X)
     case TIM1_CC_IRQn:
         timerNVICConfigure(TIM1_UP_IRQn);
@@ -706,7 +707,7 @@ void timerInit(void)
         RCC_ClockCmd(timerRCC(timerHardware[i].tim), ENABLE);
     }
 
-#if defined(STM32F3) || defined(STM32F4)
+#if defined(STM32F3) || defined(STM32F4) || defined(STM32F2)
     for (int timerIndex = 0; timerIndex < USABLE_TIMER_CHANNEL_COUNT; timerIndex++) {
         const timerHardware_t *timerHardwarePtr = &timerHardware[timerIndex];
         IOConfigGPIOAF(IOGetByTag(timerHardwarePtr->tag), IOCFG_AF_PP, timerHardwarePtr->alternateFunction);
@@ -779,7 +780,7 @@ const timerHardware_t *timerGetByTag(ioTag_t tag, timerUsageFlag_e flag)
 
     for (int i = 0; i < USABLE_TIMER_CHANNEL_COUNT; i++) {
         if (timerHardware[i].tag == tag) {
-            if (timerHardware[i].usageFlags & flag || flag == 0) {
+            if ((timerHardware[i].usageFlags & flag) || flag == 0) {
                 return &timerHardware[i];
             }
         }

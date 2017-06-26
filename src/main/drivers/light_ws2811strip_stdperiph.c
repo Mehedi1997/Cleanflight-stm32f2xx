@@ -33,7 +33,7 @@
 
 static IO_t ws2811IO = IO_NONE;
 bool ws2811Initialised = false;
-#if defined(STM32F4)
+#if defined(STM32F4) || defined(STM32F2)
 static DMA_Stream_TypeDef *dmaRef = NULL;
 #elif defined(STM32F3) || defined(STM32F1)
 static DMA_Channel_TypeDef *dmaRef = NULL;

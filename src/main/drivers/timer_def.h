@@ -447,6 +447,93 @@
 
 #define DEF_TIM_DMA__BTCH_TIM14_CH1   NONE
 
+#elif defined(STM32F2)
+
+#define DEF_TIM(tim, chan, pin, flags, out, dmaopt) {           \
+    tim,                                                        \
+    IO_TAG(pin),                                                \
+    DEF_TIM_CHANNEL(CH_ ## chan),                               \
+    flags,                                                      \
+    (DEF_TIM_OUTPUT(CH_ ## chan) | out),                        \
+    DEF_TIM_AF(TIM_ ## tim),                                    \
+    DEF_TIM_DMA_COND(                                           \
+        DEF_TIM_DMA_STREAM(dmaopt, TCH_## tim ## _ ## chan),    \
+        DEF_TIM_DMA_CHANNEL(dmaopt, TCH_## tim ## _ ## chan),   \
+        DEF_TIM_DMA_HANDLER(dmaopt, TCH_## tim ## _ ## chan)    \
+    )                                                           \
+}                                                               \
+/**/
+
+#define DEF_TIM_CHANNEL(ch)                   CONCAT(DEF_TIM_CHANNEL__, DEF_TIM_CH_GET(ch))
+#define DEF_TIM_CHANNEL__D(chan_n, n_channel) TIM_Channel_ ## chan_n
+
+#define DEF_TIM_AF(tim)                       CONCAT(DEF_TIM_AF__, DEF_TIM_TIM_GET(tim))
+#define DEF_TIM_AF__D(tim_n)                  GPIO_AF_TIM ## tim_n
+
+#define DEF_TIM_DMA_CHANNEL(variant, timch) \
+    CONCAT(DEF_TIM_DMA_CHANNEL__, DEF_TIM_DMA_GET(variant, timch))
+#define DEF_TIM_DMA_CHANNEL__D(dma_n, stream_n, chan_n)    DMA_Channel_ ## chan_n
+#define DEF_TIM_DMA_CHANNEL__NONE                          DMA_Channel_0
+
+#define DEF_TIM_DMA_STREAM(variant, timch)                              \
+    CONCAT(DEF_TIM_DMA_STREAM__, DEF_TIM_DMA_GET(variant, timch))
+#define DEF_TIM_DMA_STREAM__D(dma_n, stream_n, chan_n)  DMA ## dma_n ## _Stream ## stream_n
+#define DEF_TIM_DMA_STREAM__NONE                        NULL
+
+#define DEF_TIM_DMA_HANDLER(variant, timch) \
+    CONCAT(DEF_TIM_DMA_HANDLER__, DEF_TIM_DMA_GET(variant, timch))
+#define DEF_TIM_DMA_HANDLER__D(dma_n, stream_n, chan_n) DMA ## dma_n ## _ST ## stream_n ## _HANDLER
+#define DEF_TIM_DMA_HANDLER__NONE                       0
+
+
+/* F2 Stream Mappings */
+// D(DMAx, Stream, Channel)
+#define DEF_TIM_DMA__BTCH_TIM1_CH1    D(2, 6, 0),D(2, 1, 6),D(2, 3, 6)
+#define DEF_TIM_DMA__BTCH_TIM1_CH2    D(2, 6, 0),D(2, 2, 6)
+#define DEF_TIM_DMA__BTCH_TIM1_CH3    D(2, 6, 0),D(2, 6, 6)
+#define DEF_TIM_DMA__BTCH_TIM1_CH4    D(2, 4, 6)
+
+#define DEF_TIM_DMA__BTCH_TIM2_CH1    D(1, 5, 3)
+#define DEF_TIM_DMA__BTCH_TIM2_CH2    D(1, 6, 3)
+#define DEF_TIM_DMA__BTCH_TIM2_CH3    D(1, 1, 3)
+#define DEF_TIM_DMA__BTCH_TIM2_CH4    D(1, 7, 3),D(1, 6, 3)
+
+#define DEF_TIM_DMA__BTCH_TIM3_CH1    D(1, 4, 5)
+#define DEF_TIM_DMA__BTCH_TIM3_CH2    D(1, 5, 5)
+#define DEF_TIM_DMA__BTCH_TIM3_CH3    D(1, 7, 5)
+#define DEF_TIM_DMA__BTCH_TIM3_CH4    D(1, 2, 5)
+
+#define DEF_TIM_DMA__BTCH_TIM4_CH1    D(1, 0, 2)
+#define DEF_TIM_DMA__BTCH_TIM4_CH2    D(1, 3, 2)
+#define DEF_TIM_DMA__BTCH_TIM4_CH3    D(1, 7, 2)
+
+#define DEF_TIM_DMA__BTCH_TIM5_CH1    D(1, 2, 6)
+#define DEF_TIM_DMA__BTCH_TIM5_CH2    D(1, 4, 6)
+#define DEF_TIM_DMA__BTCH_TIM5_CH3    D(1, 0, 6)
+#define DEF_TIM_DMA__BTCH_TIM5_CH4    D(1, 1, 6),D(1, 3, 6)
+
+#define DEF_TIM_DMA__BTCH_TIM8_CH1    D(2, 2, 0),D(2, 2, 7)
+#define DEF_TIM_DMA__BTCH_TIM8_CH2    D(2, 2, 0),D(2, 3, 7)
+#define DEF_TIM_DMA__BTCH_TIM8_CH3    D(2, 2, 0),D(2, 4, 7)
+#define DEF_TIM_DMA__BTCH_TIM8_CH4    D(2, 7, 7)
+
+#define DEF_TIM_DMA__BTCH_TIM4_CH4    NONE
+
+#define DEF_TIM_DMA__BTCH_TIM9_CH1    NONE
+#define DEF_TIM_DMA__BTCH_TIM9_CH2    NONE
+
+#define DEF_TIM_DMA__BTCH_TIM10_CH1   NONE
+
+#define DEF_TIM_DMA__BTCH_TIM11_CH1   NONE
+
+#define DEF_TIM_DMA__BTCH_TIM12_CH1   NONE
+#define DEF_TIM_DMA__BTCH_TIM12_CH2   NONE
+
+#define DEF_TIM_DMA__BTCH_TIM13_CH1   NONE
+
+#define DEF_TIM_DMA__BTCH_TIM14_CH1   NONE
+//end F2
+
 #elif defined(STM32F7)
 #define DEF_TIM(tim, chan, pin, flags, out, dmaopt) {                   \
     tim,                                                                \

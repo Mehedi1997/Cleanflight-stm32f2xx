@@ -135,7 +135,7 @@ serialPort_t *uartOpen(UARTDevice device, serialReceiveCallbackPtr rxCallback, u
     // Receive DMA or IRQ
     DMA_InitTypeDef DMA_InitStructure;
     if (mode & MODE_RX) {
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
         if (s->rxDMAStream) {
             DMA_StructInit(&DMA_InitStructure);
             DMA_InitStructure.DMA_PeripheralBaseAddr = s->rxDMAPeripheralBaseAddr;
@@ -161,7 +161,7 @@ serialPort_t *uartOpen(UARTDevice device, serialReceiveCallbackPtr rxCallback, u
 #endif
             DMA_InitStructure.DMA_BufferSize = s->port.rxBufferSize;
 
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
             DMA_InitStructure.DMA_Channel = s->rxDMAChannel;
             DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;
             DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;
@@ -189,7 +189,7 @@ serialPort_t *uartOpen(UARTDevice device, serialReceiveCallbackPtr rxCallback, u
 
     // Transmit DMA or IRQ
     if (mode & MODE_TX) {
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
         if (s->txDMAStream) {
             DMA_StructInit(&DMA_InitStructure);
             DMA_InitStructure.DMA_PeripheralBaseAddr = s->txDMAPeripheralBaseAddr;
@@ -215,7 +215,7 @@ serialPort_t *uartOpen(UARTDevice device, serialReceiveCallbackPtr rxCallback, u
 #endif
             DMA_InitStructure.DMA_BufferSize = s->port.txBufferSize;
 
-#ifdef STM32F4
+#if defined(STM32F4) || defined(STM32F2)
             DMA_InitStructure.DMA_Channel = s->txDMAChannel;
             DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;
             DMA_InitStructure.DMA_Mode = DMA_Mode_Normal;

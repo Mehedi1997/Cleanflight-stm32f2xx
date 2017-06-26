@@ -42,7 +42,7 @@ typedef struct i2cHardware_s {
 
 extern const i2cHardware_t i2cHardware[];
 
-#if defined(STM32F1) || defined(STM32F4)
+#if defined(STM32F1) || defined(STM32F4) || defined(STM32F2)
 typedef struct i2cState_s {
     volatile bool error;
     volatile bool busy;
@@ -65,7 +65,7 @@ typedef struct i2cDevice_s {
     bool pullUp;
 
     // MCU/Driver dependent member follows
-#if defined(STM32F1) || defined(STM32F4)
+#if defined(STM32F1) || defined(STM32F4) || defined(STM32F2)
     i2cState_t state;
 #endif
 #ifdef USE_HAL_DRIVER

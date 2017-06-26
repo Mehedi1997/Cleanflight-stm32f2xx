@@ -24,7 +24,7 @@ typedef void (*dmaCallbackHandlerFuncPtr)(struct dmaChannelDescriptor_s *channel
 
 typedef struct dmaChannelDescriptor_s {
     DMA_TypeDef*                dma;
-#if defined(STM32F4) || defined(STM32F7)
+#if defined(STM32F4) || defined(STM32F7) || defined(STM32F2)
     DMA_Stream_TypeDef*         ref;
 #else
     DMA_Channel_TypeDef*        ref;
@@ -43,7 +43,7 @@ typedef struct dmaChannelDescriptor_s {
 //#define HAL_CLEANCACHE(addr, size) (SCB_CleanDCache_by_Addr((uint32_t*)((uint32_t)addr & ~0x1f), ((uint32_t)(addr + size + 0x1f) & ~0x1f) - ((uint32_t)addr & ~0x1f)))
 #endif
 
-#if defined(STM32F4) || defined(STM32F7)
+#if defined(STM32F4) || defined(STM32F7) || defined(STM32F2)
 uint32_t dmaFlag_IT_TCIF(const DMA_Stream_TypeDef *stream);
 
 typedef enum {

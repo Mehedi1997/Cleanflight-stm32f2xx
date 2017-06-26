@@ -1,5 +1,6 @@
-Have ever you noticed that cleanflight supports ST's F1,..F3, F4 and F7 series MCU's but F2! 
+Have you ever noticed that cleanflight supports ST's F1, F3, F4 and F7 series MCU's but not F2! 
 I think it will be great if F1 to F7 all are supported by clean flight. 
+Let's do it!
 
 STM32F207xx is an arm cortex-m3 MCU which has very similar memory, peripheral and bus architecture to stm32f4xx series. 
 this MCU is capable to run at 120Mhz clock speed, has upto 1024kb flash, 128kb RAM and 6 uart's. 

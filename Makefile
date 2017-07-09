@@ -226,8 +226,8 @@ endif
 128K_TARGETS  = $(F1_TARGETS)
 #...modified..
 256K_TARGETS  = $(F3_TARGETS)
-512K_TARGETS  = $(F411_TARGETS) $(F446_TARGETS) $(F7X2RE_TARGETS) $(F7X5XE_TARGETS) $(F2_TARGETS)
-1024K_TARGETS = $(F405_TARGETS) $(F7X5XG_TARGETS) $(F7X6XG_TARGETS)
+512K_TARGETS  = $(F411_TARGETS) $(F446_TARGETS) $(F7X2RE_TARGETS) $(F7X5XE_TARGETS) 
+1024K_TARGETS = $(F405_TARGETS) $(F7X5XG_TARGETS) $(F2_TARGETS) $(F7X6XG_TARGETS)
 2048K_TARGETS = $(F7X5XI_TARGETS) $(SITL_TARGETS)
 
 # Configure default flash sizes for the targets (largest size specified gets hit first) if flash not specified already.
@@ -585,25 +585,20 @@ STDPERIPH_DIR   = $(ROOT)/lib/main/STM32F2xx_StdPeriph_Driver
 STDPERIPH_SRC   = $(notdir $(wildcard $(STDPERIPH_DIR)/src/*.c))
 EXCLUDES        = stm32f2xx_crc.c \
                   stm32f2xx_can.c \
-#                  stm32f2xx_fmc.c \
-#                  stm32f2xx_sai.c \
+                  stm32f2xx_sai.c \
 #                  stm32f2xx_cec.c \
-#                  stm32f2xx_dsi.c \
-#                  stm32f2xx_flash_ramfunc.c \
-#                  stm32f2xx_fmpi2c.c \
-#                  stm32f2xx_lptim.c \
-#                  stm32f2xx_qspi.c \
+#                  stm32f2xx_dsi.c 
 #                  stm32f2xx_spdifrx.c \
-#                  stm32f2xx_cryp.c \
-#                  stm32f2xx_cryp_aes.c \
-#                  stm32f2xx_hash_md5.c \
-#                  stm32f2xx_cryp_des.c \
-#                  stm32f2xx_rtc.c \
-#                  stm32f2xx_hash.c \
-#                  stm32f2xx_dbgmcu.c \
+                  stm32f2xx_cryp.c \
+                  stm32f2xx_cryp_aes.c \
+                  stm32f2xx_hash_md5.c \
+                  stm32f2xx_cryp_des.c \
+                  stm32f2xx_rtc.c \
+                  stm32f2xx_hash.c \
+                  stm32f2xx_dbgmcu.c \
 #                  stm32f2xx_cryp_tdes.c \
-#                  stm32f2xx_hash_sha1.c
-#
+                  stm32f2xx_hash_sha1.c
+
 STDPERIPH_SRC   := $(filter-out ${EXCLUDES}, $(STDPERIPH_SRC))
 
 #USB
@@ -652,19 +647,14 @@ endif
 #Flags -march=armv6-m
 ARCH_FLAGS      = -mthumb -mcpu=cortex-m3
 
-ifeq ($(TARGET),$(filter $(TARGET),$(F2_TARGETS)))
 DEVICE_FLAGS    = -DSTM32F207xx -DSTM32F2xx
-LD_SCRIPT       = $(LINKER_DIR)/stm32_flash_f207_256k.ld 
+LD_SCRIPT       = $(LINKER_DIR)/stm32_flash_f207_1024k.ld 
 #LD_SCRIPT       += $(LINKER_DIR)/stm32_flash_split.ld 
 STARTUP_SRC     = startup_stm32f2xx.s
 
-else
-$(error Unknown MCU for F4 target)
-endif
-
-
 DEVICE_FLAGS    += -DHSE_VALUE=$(HSE_VALUE)
 
+#end F2 targets
 # Start F1 targets
 else
 

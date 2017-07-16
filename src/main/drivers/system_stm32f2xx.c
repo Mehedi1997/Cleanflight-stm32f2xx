@@ -1,18 +1,8 @@
 /*
- * This file is part of Cleanflight.
+ * system_stm32f2xx.c
  *
- * Cleanflight is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * Cleanflight is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with Cleanflight.  If not, see <http://www.gnu.org/licenses/>.
+ *  Created on: JuL 13, 2017
+ *      Author: MEHEDI
  */
 
 #include <stdbool.h>
@@ -31,12 +21,9 @@ void SetSysClock(void);
 
 void systemReset(void)
 {
-    if (mpuResetFn) {
-        mpuResetFn();
-    }
 
-    __disable_irq();
-    NVIC_SystemReset();
+	// Generate system reset
+	    SCB->AIRCR = AIRCR_VECTKEY_MASK | (uint32_t)0x04;
 }
 
 void systemResetToBootloader(void)
@@ -47,8 +34,7 @@ void systemResetToBootloader(void)
 
     *((uint32_t *)0x2001FFFC) = 0xDEADBEEF; // 128KB SRAM STM32F2XX
 
-    __disable_irq();
-    NVIC_SystemReset();
+    systemReset();
 }
 
 void enableGPIOPowerUsageAndNoiseReductions(void)

@@ -24,7 +24,7 @@
 #ifndef __CM3_CORE_H__
 #define __CM3_CORE_H__
 
-#include "stm32f2xx.h"
+//#include "stm32f2xx.h"
 
 /** @addtogroup CMSIS_CM3_core_LintCinfiguration CMSIS CM3 Core Lint Configuration
  *

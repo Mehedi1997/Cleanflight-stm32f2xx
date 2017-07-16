@@ -81,9 +81,9 @@ include $(ROOT)/make/$(OSFAMILY).mk
 # include the tools makefile
 include $(ROOT)/make/tools.mk
 
-# default xtal value for F2 targets
-#....modified.....
-HSE_VALUE       ?= 25000000
+# default xtal value for F4 targets
+
+HSE_VALUE       ?= 8000000
 
 # used for turning on features like VCP and SDCARD
 FEATURES        =
@@ -224,7 +224,6 @@ $(error Target '$(TARGET)' has not specified a valid STM group, must be one of F
 endif
 
 128K_TARGETS  = $(F1_TARGETS)
-#...modified..
 256K_TARGETS  = $(F3_TARGETS)
 512K_TARGETS  = $(F411_TARGETS) $(F446_TARGETS) $(F7X2RE_TARGETS) $(F7X5XE_TARGETS) 
 1024K_TARGETS = $(F405_TARGETS) $(F7X5XG_TARGETS) $(F2_TARGETS) $(F7X6XG_TARGETS)
@@ -586,9 +585,6 @@ STDPERIPH_SRC   = $(notdir $(wildcard $(STDPERIPH_DIR)/src/*.c))
 EXCLUDES        = stm32f2xx_crc.c \
                   stm32f2xx_can.c \
                   stm32f2xx_sai.c \
-#                  stm32f2xx_cec.c \
-#                  stm32f2xx_dsi.c 
-#                  stm32f2xx_spdifrx.c \
                   stm32f2xx_cryp.c \
                   stm32f2xx_cryp_aes.c \
                   stm32f2xx_hash_md5.c \
@@ -596,7 +592,6 @@ EXCLUDES        = stm32f2xx_crc.c \
                   stm32f2xx_rtc.c \
                   stm32f2xx_hash.c \
                   stm32f2xx_dbgmcu.c \
-#                  stm32f2xx_cryp_tdes.c \
                   stm32f2xx_hash_sha1.c
 
 STDPERIPH_SRC   := $(filter-out ${EXCLUDES}, $(STDPERIPH_SRC))
@@ -648,12 +643,11 @@ endif
 ARCH_FLAGS      = -mthumb -mcpu=cortex-m3
 
 DEVICE_FLAGS    = -DSTM32F207xx -DSTM32F2xx
-LD_SCRIPT       = $(LINKER_DIR)/stm32_flash_f207_1024k.ld 
-#LD_SCRIPT       += $(LINKER_DIR)/stm32_flash_split.ld 
+LD_SCRIPT       = $(LINKER_DIR)/stm32_flash_f207_1024k.ld
 STARTUP_SRC     = startup_stm32f2xx.s
 
-DEVICE_FLAGS    += -DHSE_VALUE=$(HSE_VALUE)
-
+#DEVICE_FLAGS    += -DHSE_VALUE=$(HSE_VALUE)
+#
 #end F2 targets
 # Start F1 targets
 else
@@ -725,7 +719,6 @@ else ifeq ($(TARGET), $(filter $(TARGET),$(F411_TARGETS)))
 LD_SCRIPT = $(LINKER_DIR)/stm32_flash_f411_opbl.ld
 else ifeq ($(TARGET), $(filter $(TARGET),$(F3_TARGETS)))
 LD_SCRIPT = $(LINKER_DIR)/stm32_flash_f303_$(FLASH_SIZE)k_opbl.ld
-#....modified.....
 else ifeq ($(TARGET), $(filter $(TARGET),$(F2_TARGETS)))
 LD_SCRIPT = $(LINKER_DIR)/stm32_flash_f207_$(FLASH_SIZE)k_opbl.ld
 else ifeq ($(TARGET), $(filter $(TARGET),$(F1_TARGETS)))
@@ -1262,12 +1255,6 @@ ifeq ($(TARGET),$(filter $(TARGET),$(F1_TARGETS)))
 OPTIMISE_DEFAULT    := -Os
 
 LTO_FLAGS           := $(OPTIMISATION_BASE) $(OPTIMISE_DEFAULT)
-else ifeq ($(TARGET),$(filter $(TARGET),$(F2_TARGETS)))
-OPTIMISE_DEFAULT    := -O2
-OPTIMISE_SPEED      := -Ofast
-OPTIMISE_SIZE       := -Os
-
-LTO_FLAGS           := $(OPTIMISATION_BASE) $(OPTIMISE_SPEED)
 
 else ifeq ($(TARGET),$(filter $(TARGET),$(SITL_TARGETS)))
 OPTIMISE_DEFAULT    := -Ofast
